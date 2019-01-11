@@ -228,5 +228,56 @@ implement your own subclass of Closure.
 
 By changing the `resolveStrategy`, we are modifying delegation strategy.
 
+## Domain-Specific Languages
+### Command chains
+Groovy lets you omit parentheses around the arguments of a method call for top-level statements.
+The general idea is that a call like `a b c d` will actually be equivalent to `a(b).c(d)`.This also
+works with multiple arguments, closure arguments, and even named arguments.
+```groovy
+// equivalent to: turn(left).then(right)
+turn left then right
 
+// equivalent to: take(2.pills).of(chloroquinine).after(6.hours)
+take 2.pills of chloroquinine after 6.hours
+
+// equivalent to: paint(wall).with(red, green).and(yellow)
+paint wall with red, green and yellow
+
+// with named parameters too
+// equivalent to: check(that: margarita).tastes(good)
+check that: margarita tastes good
+
+// with closures as parameters
+// equivalent to: given({}).when({}).then({})
+given { } when { } then { }
+```
+It is also possible to use methods in the chain which take no arguments, but in that case,
+the parentheses are needed:
+```groovy
+// equivalent to: select(all).unique().from(names)
+select all unique() from names
+```
+
+If your command chain contains an odd number of elements, the chain will be composed of
+method/arguments, and will finish by a final property access:
+```
+// equivalent to: take(3).cookies
+// and also this: take(3).getCookies()
+take 3 cookies
+```
+### DSL Sample
+```groovy
+show = { println it }
+square_root = { Math.sqrt(it) }
+
+def please(action) {
+  [the: { what ->
+    [of: { n -> action(what(n)) }]
+  }]
+}
+
+// equivalent to: please(show).the(square_root).of(100)
+please show the square_root of 100
+// ==> 10.0
+```
 
