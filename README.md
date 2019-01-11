@@ -207,4 +207,26 @@ However, there are major differences:
 * the delegate can be used transparently, that is to say without prefixing method calls with
 delegate. as explained in the next paragraph.
 
+### Delegation strategy
+A closure actually defines multiple resolution strategies that you can choose:
+
+* `Closure.OWNER_FIRST` is the default strategy. If a property/method exists on the owner, then it
+will be called on the owner. If not, then the delegate is used.
+
+* `Closure.DELEGATE_FIRST` reverses the logic: the delegate is used first, then the owner
+
+* `Closure.OWNER_ONLY` will only resolve the property/method lookup on the owner: the delegate
+will be ignored.
+
+* `Closure.DELEGATE_ONLY` will only resolve the property/method lookup on the delegate: the owner
+will be ignored.
+
+* `Closure.TO_SELF` can be used by developers who need advanced meta-programming techniques and
+wish to implement a custom resolution strategy: the resolution will not be made on the owner or
+the delegate but only on the closure class itself. It makes only sense to use this if you
+implement your own subclass of Closure.
+
+By changing the `resolveStrategy`, we are modifying delegation strategy.
+
+
 
